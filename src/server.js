@@ -1,31 +1,50 @@
 import express from "express";
 
 const PORT = 4000;
-
-// step 1. we create application
 const app = express();
+
+const logger = (req, res, next) => {
+  console.log("${req.method} ${req.url}");
+  next();
+};
+
+const getTime = (req, res, next) => {
+  new Date();
+  console.log("Time:" + new Date());
+  next();
+};
+
+const protectorMiddleware = (req, res, next) => {
+  const url = req.url;
+  if (url === "/protected") {
+    return res.send("<h1>You are not allowed</h1>");
+  }
+  next();
+};
+
+const securityLogger = (req, res, next) => {
+  if (req.protocol === "https") {
+    console.log("secure");
+  }
+  console.log("insecure❌");
+  next();
+};
+
 const handleHome = (req, res) => {
-  return res.sendFile(__dirname + "/index.html");
-};
-const handleLogin = (req, res) => {
-  return res.sendFile(__dirname + "/login.html");
-};
-const handleAbout = (req, res) => {
-  return res.sendFile(__dirname + "/about.html");
-};
-const handleContact = (req, res) => {
-  return res.sendFile(__dirname + "/contact.html");
+  return res.send("Hello!");
 };
 
-// req is request object , res is response object.
-// name doesn't matter by itself, but I have to use both in same time.
+const handleProtected = (req, res) => {
+  return res.send("Welcome to the privarte lounge");
+};
 
-// step 2.  we are going to configure application
+app.use(logger);
+app.use(protectorMiddleware);
+app.use(getTime);
+app.use(securityLogger);
 app.get("/", handleHome);
-app.get("/login", handleLogin);
-app.get("/about", handleAbout);
-app.get("/contact", handleContact);
-// step 3. we listen from external connection
+app.get("/protected", handleProtected);
+
 const handleListening = () =>
   console.log("server listening on port http://localhost:${PORT} 🤞");
 
