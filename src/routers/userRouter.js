@@ -1,11 +1,10 @@
 import express from "express";
-import { edit, remove, see, logout } from "../controllers/userController";
+import { users, see, editProfile } from "../controllers/userController";
 
 const userRouter = express.Router();
 
-userRouter.get("/edit", edit);
-userRouter.get("/remove", remove);
+userRouter.get("/", users);
 userRouter.get("/:id", see);
-userRouter.get("/logout", logout);
+userRouter.get("/edit-profile", editProfile);
 
 export default userRouter;
